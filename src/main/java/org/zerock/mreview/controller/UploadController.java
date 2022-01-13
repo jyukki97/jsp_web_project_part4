@@ -88,18 +88,23 @@ public class UploadController {
     }
 
     @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(String fileName) {
-
+    public ResponseEntity<byte[]> getFile(String fileName, String size) {
         try {
             String srcFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
             log.info("fileName: " + srcFileName);
 
             File file = new File(uploadPath + File.separator + srcFileName);
+
+            if(size != null && size.equals("1")) {
+                file = new File(file.getParent(), file.getName().substring(2));
+            }
+
             log.info("file: " + file);
 
             HttpHeaders header = new HttpHeaders();
 
             header.add("Content-Type", Files.probeContentType(file.toPath()));
+
             return new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
