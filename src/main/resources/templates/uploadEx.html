@@ -7,12 +7,25 @@
 <body>
     <input name="uploadFiles" type="file" multiple>
     <button class="uploadBtn">Upload</button>
+
+    <div class="uploadResult">
+
+    </div>
+
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
         crossorigin="anonymous"></script>
 
     <script>
+        function showUploadedImaged(arr) {
+            console.log(arr);
+
+            var divArea = $(".uploadResult");
+            for(var i = 0; i < arr.length; i++) {
+                divArea.append("<img src='/display?fileName=" + arr[i].imageURL + "'>");
+            }
+        }
         $('.uploadBtn').click(function() {
             var formData = new FormData();
             var inputFile = $("input[type='file']");
@@ -31,7 +44,7 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function(result){
-                    console.log(result);
+                    showUploadedImaged(result);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(textStatus);
