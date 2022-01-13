@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <input name="uploadFiles" type="file" multiple>
+    <button class="uploadBtn">Upload</button>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+
+    <script>
+        $('.uploadBtn').click(function() {
+            var formData = new FormData();
+            var inputFile = $("input[type='file']");
+            var files = inputFile[0].files;
+
+            for(var i = 0; i < files.length; i++) {
+                console.log(files[i]);
+                formData.append("uploadFiles", files[i]);
+            }
+
+            $.ajax({
+                url: '/uploadAjax',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: 'POST',
+                dataType: 'json',
+                success: function(result){
+                    console.log(result);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
