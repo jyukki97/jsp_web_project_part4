@@ -60,7 +60,15 @@
             </ul>
         </div>
 
+        <div class="form-group">
+            <a th:href="@{/movie/modify(mno = ${dto.mno}, page=${requestDTO.page}, type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
+                <button type="button" class="btn btn-primary">Modify</button>
+            </a>
 
+            <a th:href="@{/movie/list(page=${requestDTO.page} , type=${requestDTO.type}, keyword =${requestDTO.keyword})}">
+                <button type="button" class="btn btn-info">List</button>
+            </a>
+        </div>
 
         <button type="button" class="btn btn-primary">
             Review Count <span class="badge badge-light">[[${dto.reviewCnt}]]</span>

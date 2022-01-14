@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.mreview.dto.MovieDTO;
 import org.zerock.mreview.dto.PageRequestDTO;
+import org.zerock.mreview.entity.Movie;
 import org.zerock.mreview.service.MovieService;
 
 @Controller
@@ -50,5 +51,35 @@ public class MovieController {
         MovieDTO movieDTO = movieService.getMovie(mno);
 
         model.addAttribute("dto", movieDTO);
+    }
+
+    @PostMapping("/modify")
+    public String modify(MovieDTO movieDTO, @ModelAttribute("requestDTO") PageRequestDTO requestDTO,
+                       RedirectAttributes redirectAttributes) {
+        log.info("Post modify......");
+        log.info("dto: " + movieDTO);
+
+        movieService.modify(movieDTO);
+
+        redirectAttributes.addAttribute("page", requestDTO.getPage());
+        redirectAttributes.addAttribute("type", requestDTO.getType());
+        redirectAttributes.addAttribute("keyword", requestDTO.getKeyword());
+
+        redirectAttributes.addAttribute("mno", movieDTO.getMno());
+
+        return "redirect:/movie/read";
+    }
+
+    @PostMapping("/remove")
+    public String remove(long mno, RedirectAttributes redirectAttributes) {
+        log.info("Post Remove......");
+        log.info("mno: " + mno);
+
+        movieService.removeWithImage(mno);
+
+        redirectAttributes.addFlashAttribute("msg", mno);
+
+        return "redirect:/movie/list";
+
     }
 }

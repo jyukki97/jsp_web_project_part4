@@ -18,7 +18,9 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -47,17 +49,20 @@ public class MovieServiceImpl implements MovieService{
 
     @Override
     public PageResultDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO) {
-        Pageable pageable = requestDTO.getPageable(Sort.by("mno").descending());
-
-        Page<Object[]> result = movieRepository.getListPage(pageable);
-
-        Function<Object[], MovieDTO> fn = (arr -> entitiesToDTO(
-                (Movie) arr[0],
-                List.of((MovieImage) arr[1]),
-                (Double) arr[2],
-                (Long) arr[3]
+        Function<Movie, MovieDTO> fn = (arr -> entitiesToDTO(
+                arr,
+                new ArrayList<>(),
+                0.0,
+                0L
         ));
-        return new PageResultDTO<>(result, fn);
+
+        Page<Movie> result = movieRepository.searchPage(
+                requestDTO.getType(),
+                requestDTO.getKeyword(),
+                requestDTO.getPageable(Sort.by("mno").descending())
+        );
+
+        return new PageResultDTO(result, fn);
     }
 
     @Override
@@ -77,5 +82,26 @@ public class MovieServiceImpl implements MovieService{
         Long reviewCnt = (Long) result.get(0)[3];
 
         return entitiesToDTO(movie, movieImageList, avg, reviewCnt);
+    }
+
+    @Override
+    public void modify(MovieDTO movieDTO) {
+        Optional<Movie> result = movieRepository.findById(movieDTO.getMno());
+
+        if(result.isPresent()) {
+            Movie entity = result.get();
+
+            entity.changeTitle(movieDTO.getTitle());
+
+            movieRepository.save(entity);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void removeWithImage(Long mno) {
+        imageRepository.deleteByMno(mno);
+
+        movieRepository.deleteById(mno);
     }
 }
